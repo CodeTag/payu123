@@ -1,6 +1,6 @@
 SSL_VERIFY = False
 
-PAYMENTS_URL = 'https://stg.api.payulatam.com/reports-api/4.0/service.cgi'
+PAYMENTS_URL = 'https://stg.api.payulatam.com/payments-api/4.0/service.cgi'
 REPORTS_URL = 'https://stg.api.payulatam.com/reports-api/4.0/service.cgi'
 
 API_LOGIN = '11959c415b33d0c'
