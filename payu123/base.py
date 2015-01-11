@@ -1,4 +1,4 @@
-import settings
+from . import settings
 import requests, json
 
 class APIRequest():

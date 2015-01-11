@@ -1,4 +1,4 @@
-import base, settings
+from . import base, settings
 
 class PaymentRequest(base.APIRequest):
     
