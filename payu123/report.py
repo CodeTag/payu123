@@ -1,12 +1,9 @@
 from . import base, settings
 
-class ReportRequest(base.APIRequest):
+def ping():
+    data = {}
+    data['command'] = 'PING'
 
-    @staticmethod
-    def ping():
-        data = {}
-        data['command'] = 'PING'
+    resp = base.send(settings.REPORTS_URL, data=data)
 
-        resp = ReportRequest.send(settings.REPORTS_URL, data=data)
-
-        return resp['code'] == 'SUCCESS'
+    return resp['code'] == 'SUCCESS'
