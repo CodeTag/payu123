@@ -6,6 +6,7 @@ class APIRequest():
     def send(self, url, data):
 
         data['language'] = settings.REQUEST_LANGUAGE
+        data['test'] = settings.IS_TEST_REQUEST
         data['merchant'] = {}
 
         data['merchant']['apiLogin'] = settings.API_LOGIN
