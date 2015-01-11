@@ -3,7 +3,8 @@ import requests, json
 
 class APIRequest():
 
-    def send(self, url, data):
+    @staticmethod
+    def send(url, data):
 
         data['language'] = settings.REQUEST_LANGUAGE
         data['test'] = settings.IS_TEST_REQUEST
