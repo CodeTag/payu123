@@ -1,43 +1,66 @@
 from . import settings
-import requests, json
+import requests, json, re
 
-def _has_parameter(_dict, param):
-    if type(_dict) != dict:
-        return False
+VALIDATORS = {
+    'int': {'validator': r'^\d+$'},
+    'string': {'validtor': r'^\w+$'}
+}
 
-    values = param.split('.', 1)
+class BaseField():
+    def __init__(self, validator='string', require=False):
+        self.validator = VALIDATORS[validator]
+        self.require = require
 
-    if values[0] not in _dict:
-        return False
+    def _create(self):
+        return None
 
-    if len(values) > 1:
-        return _has_parameter(_dict[values[0]], values[1])
+    def _validate(self, value, name):
 
-    return True
+        if self.require and value == None:
+            raise ValueError('%s is require' % name)
+                    
+        if value != None and re.match(self.validator, str(value)) == None:
+            raise ValueError('%s is not valid value for %s' % (value, name))
 
 
-def _validate_request_parameters(_dict, req_groups):
+class BaseModel():
 
-    def get_prefix_key(prefix, key):
-        if prefix == '':
-            return key
+    def __new__(cls):
+        if self.__class__ == BaseModel:
+            raise Exception('Base Model can not be instantiate')
 
-        return prefix +'.'+ key
+    def __init__(self):
+        for key, attr in self._get_attrs():
+            self.__dict__[key] = attr._create()
 
-    def _validate(group, prefix=''):
-        for key, requirements in group.iteritems():
-            parameter = get_prefix_key(prefix, key)
+    def _get_attrs(self):
+        keys = filter(self._is_attr, dir(self.__class__))
+        fields = vars(self.__class__)
 
-            if not requirements:
-                if not _has_parameter(_dict, parameter):
-                    raise ParameterNotFound(parameter)
-            else:
-                _validate(requirements, parameter)
+        attrs = {}
+
+        for key in keys:
+            attrs[key] = fields[key]
+
+        return attrs.iteritems()
+
+    def _is_attr(self, key):
+        attr = getattr(self.__class__, key)
+        return isinstance(attr, BaseField) or isinstance(attr, BaseModel)
+
+    def _create(self):
+        return self
+
+    def _validate(self, obj=None, parent=None):
+        obj = obj or self
+
+        for key, attr in self._get_attrs():
+            value = self.__dict__[key] if key in self.__dict__ else None
+            name = '%s.%s' % (parent or self.__class__, key)
+
+            attr._validate(value, name)
 
         return True
-
-    for group in req_groups:
-        _validate(group)
 
 def send(url, _dict={}, data=None):
 
@@ -68,6 +91,3 @@ class RequestError(Exception):
 
     def __str__(self):
         return self.error
-
-class ParameterNotFound(RequestError):    
-    pass
