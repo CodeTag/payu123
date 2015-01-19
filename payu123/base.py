@@ -64,6 +64,15 @@ class BaseModel():
 
         return True
 
+    def _dict(self):
+        _dict = self.__dict__
+
+        for key, value in _dict.iteritems():
+            if isinstance(value, BaseModel):
+                _dict[key] = value._dict()
+
+        return _dict
+
 def send(url, _dict={}, data=None):
 
     if not data:
