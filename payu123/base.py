@@ -73,7 +73,7 @@ class BaseModel():
 
         return _dict
 
-def send(url, _dict={}, data=None):
+def _send(url, _dict={}, data=None):
 
     if not data:
 
@@ -85,6 +85,8 @@ def send(url, _dict={}, data=None):
         _dict['merchant']['apiKey'] = settings.API_KEY
 
         data = json.dumps(_dict)
+
+    print data
 
     resp = requests.post(url, data=data, headers={'content-type': 'application/json', 'accept': 'application/json'}, verify=settings.SSL_VERIFY)
     resp = resp.json()

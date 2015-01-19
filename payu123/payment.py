@@ -1,18 +1,22 @@
 from . import base, settings
 
-def get_payment_methods():
-    data = {}
-    data['command'] = 'GET_PAYMENT_METHODS'
+class BasePayment(base.BaseModel):
 
-    resp = base.send(settings.PAYMENTS_URL, data=data)
+    @staticmethod
+    def get_payment_methods():
+        data = {}
+        data['command'] = 'GET_PAYMENT_METHODS'
 
-    return resp
+        resp = base._send(settings.PAYMENTS_URL, data)
 
-def ping():
+        return resp
 
-    data = {}
-    data['command'] = 'PING'
+    @staticmethod
+    def ping():
 
-    resp = base.send(settings.PAYMENTS_URL, data=data)
+        data = {}
+        data['command'] = 'PING'
 
-    return resp['code'] == 'SUCCESS'
+        resp = base._send(settings.PAYMENTS_URL, data)
+
+        return resp['code'] == 'SUCCESS'

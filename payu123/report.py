@@ -1,9 +1,12 @@
 from . import base, settings
 
-def ping():
-    data = {}
-    data['command'] = 'PING'
+class BaseReport(base.BaseModel):
 
-    resp = base.send(settings.REPORTS_URL, data=data)
+    @staticmethod
+    def ping():
+        data = {}
+        data['command'] = 'PING'
 
-    return resp['code'] == 'SUCCESS'
+        resp = base._send(settings.REPORTS_URL, data)
+
+        return resp['code'] == 'SUCCESS'
