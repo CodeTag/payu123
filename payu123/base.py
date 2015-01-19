@@ -2,13 +2,13 @@ from . import settings
 import requests, json, re
 
 VALIDATORS = {
-    'int': {'validator': r'^\d+$'},
-    'string': {'validtor': r'^\w+$'}
+    'int': {'validator': lambda v: re.match(r'^\d+$', str(v)) != None},
+    'string': {'validator': lambda v: re.match(r'^\w+$', str(v)) != None}
 }
 
 class BaseField():
     def __init__(self, validator='string', require=False):
-        self.validator = VALIDATORS[validator]
+        self.validator = VALIDATORS[validator]['validator']
         self.require = require
 
     def _create(self):
@@ -19,8 +19,10 @@ class BaseField():
         if self.require and value == None:
             raise ValueError('%s is require' % name)
                     
-        if value != None and re.match(self.validator, str(value)) == None:
+        if value != None and self.validator(value) == False:
             raise ValueError('%s is not valid value for %s' % (value, name))
+
+        return True
 
 
 class BaseModel():
