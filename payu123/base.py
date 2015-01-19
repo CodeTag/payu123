@@ -1,5 +1,5 @@
 from . import settings
-import requests, json, re
+import requests, json, re, types
 
 VALIDATORS = {
     'int': {'validator': lambda v: re.match(r'^\d+$', str(v)) != None},
@@ -32,7 +32,12 @@ class BaseModel():
             raise Exception('Base Model can not be instantiate')
 
     def __init__(self):
-        for key, attr in self._get_attrs():
+        for key, attr in self._get_attrs():  
+            print type(attr)
+            if isinstance(attr, types.ClassType):
+                print 'here', key
+                attr = attr() 
+
             self.__dict__[key] = attr._create()
 
     def _get_attrs(self):
@@ -48,6 +53,10 @@ class BaseModel():
 
     def _is_attr(self, key):
         attr = getattr(self.__class__, key)
+
+        if isinstance(attr, types.ClassType):
+            return issubclass(attr, BaseField) or issubclass(attr, BaseModel)
+        
         return isinstance(attr, BaseField) or isinstance(attr, BaseModel)
 
     def _create(self):
@@ -59,6 +68,9 @@ class BaseModel():
         for key, attr in self._get_attrs():
             value = self.__dict__[key] if key in self.__dict__ else None
             name = '%s.%s' % (parent or self.__class__, key)
+
+            if isinstance(attr, types.ClassType):
+                attr = attr()
 
             attr._validate(value, name)
 
