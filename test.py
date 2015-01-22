@@ -41,6 +41,17 @@ class BaseModelTest(unittest.TestCase):
         except NotImplementedError, e:
             self.assertEquals('Base Model can not be instantiate',str(e))
 
+    def test_base_model_parameters_modify_require_for_attr_with_this_name(self):
+        
+        class TestModel(BaseModel):
+            attr1 = BaseField()
+            attr2 = BaseField(require=True)
+
+        test_model = TestModel(attr1=True, attr2=False)
+
+        self.assertEquals(True, test_model.__class__.attr1.require)
+        self.assertEquals(False, test_model.__class__.attr2.require)
+
     def test_no_compose_base_model_create_a_empty_object_with_correct_attributes(self):
 
         class TestModel(BaseModel):

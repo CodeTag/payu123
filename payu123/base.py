@@ -33,14 +33,15 @@ class BaseModel(object):
 
         return super(BaseModel, cls).__new__(cls, *args, **kwargs)
 
-    def __init__(self, require=False):
-        self.require = require
+    def __init__(self, **kwargs):
 
         for key, attr in self._get_attrs():  
-            if isinstance(attr, types.ClassType):
+            if isinstance(attr, types.ClassType) and BaseModel in attr.__bases__:
                 attr = attr()
+            
+            else:
+                attr.require = bool(kwargs.get(key))
 
-            attr.require = require or attr.require
             self.__dict__[key] = attr._create()
 
     def _get_attrs(self):
