@@ -6,7 +6,7 @@ VALIDATORS = {
     'string': {'validator': lambda v: re.match(r'^\w+$', str(v)) != None}
 }
 
-class BaseField():
+class BaseField(object):
     def __init__(self, validator='string', require=False):
         self.validator = VALIDATORS[validator]['validator']
         self.require = require
@@ -25,19 +25,22 @@ class BaseField():
         return True
 
 
-class BaseModel():
+class BaseModel(object):
 
-    def __new__(cls):
-        if self.__class__ == BaseModel:
-            raise Exception('Base Model can not be instantiate')
+    def __new__(cls, *args, **kwargs):
+        if cls is BaseModel:
+            raise NotImplementedError('Base Model can not be instantiate')
 
-    def __init__(self):
+        return super(BaseModel, cls).__new__(cls, *args, **kwargs)
+
+    def __init__(self, require=False):
+        self.require = require
+
         for key, attr in self._get_attrs():  
-            print type(attr)
             if isinstance(attr, types.ClassType):
-                print 'here', key
-                attr = attr() 
+                attr = attr()
 
+            attr.require = require or attr.require
             self.__dict__[key] = attr._create()
 
     def _get_attrs(self):
@@ -97,8 +100,6 @@ def _send(url, _dict={}, data=None):
         _dict['merchant']['apiKey'] = settings.API_KEY
 
         data = json.dumps(_dict)
-
-    print data
 
     resp = requests.post(url, data=data, headers={'content-type': 'application/json', 'accept': 'application/json'}, verify=settings.SSL_VERIFY)
     resp = resp.json()

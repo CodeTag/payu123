@@ -34,6 +34,13 @@ class BaseFieldTest(unittest.TestCase):
 
 class BaseModelTest(unittest.TestCase):
 
+    def test_base_model_cant_instantiated_directly(self):
+
+        try:
+            model = BaseModel()
+        except NotImplementedError, e:
+            self.assertEquals('Base Model can not be instantiate',str(e))
+
     def test_no_compose_base_model_create_a_empty_object_with_correct_attributes(self):
 
         class TestModel(BaseModel):
