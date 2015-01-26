@@ -2,9 +2,10 @@ from . import settings
 import requests, json, re, types
 
 VALIDATORS = {
-    'int': {'validator': lambda v: re.match(r'^\d+$', str(v)) != None },
-    'string': {'validator': lambda v: re.match(r'^\w+$', str(v)) != None },
-    'boolean': {'validator': lambda v: isinstance(v, bool) }
+    'int': {'validator': lambda v: isinstance(v, int) },
+    'string': {'validator': lambda v:  isinstance(v, str)},
+    'boolean': {'validator': lambda v: isinstance(v, bool) },
+    'email': {'validator': lambda v: re.match(r'\w+@\w+\.\w+', v) != None}
 }
 
 class BaseField(object):
