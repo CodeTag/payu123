@@ -2,8 +2,9 @@ from . import settings
 import requests, json, re, types
 
 VALIDATORS = {
-    'int': {'validator': lambda v: re.match(r'^\d+$', str(v)) != None},
-    'string': {'validator': lambda v: re.match(r'^\w+$', str(v)) != None}
+    'int': {'validator': lambda v: re.match(r'^\d+$', str(v)) != None },
+    'string': {'validator': lambda v: re.match(r'^\w+$', str(v)) != None }
+    'boolean': {'validator': lambda v: isinstance(v, bool) }
 }
 
 class BaseField(object):
