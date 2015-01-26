@@ -12,6 +12,7 @@ class BaseFieldTest(unittest.TestCase):
 
         try:
             just_int._validate(value, name)
+            self.fail('_validate must raise error when attr has an invalid value')
         except ValueError, e:
             self.assertEquals('string is not valid value for just_int', str(e))
 
@@ -24,6 +25,7 @@ class BaseFieldTest(unittest.TestCase):
 
         try:
             require._validate(value, name)
+            self.fail('_validate must raise error when require attr is None')
         except ValueError, e:
             self.assertEquals('not None is require', str(e))
 
@@ -38,6 +40,7 @@ class BaseModelTest(unittest.TestCase):
 
         try:
             model = BaseModel()
+            self.fail('BaseModel can not be instantiated directly')
         except NotImplementedError, e:
             self.assertEquals('Base Model can not be instantiate',str(e))
 
@@ -51,6 +54,33 @@ class BaseModelTest(unittest.TestCase):
 
         self.assertEquals(True, test_model.__class__.attr1.require)
         self.assertEquals(False, test_model.__class__.attr2.require)
+
+    def test_base_model_validate_raise_value_error_if_require_attr_is_none(self):
+
+        class TestModel(BaseModel):
+            attr1 = BaseField(require=True)
+
+        test_model = TestModel()
+
+        try:
+            test_model._validate()
+            self.fail('_validate must raise error when require attr is None')
+        except ValueError, e:
+            self.assertEquals('TestModel.attr1 is require', str(e))
+
+    def test_base_model_validate_raise_value_error_if_attr_value_is_invalid(self):
+
+        class TestModel(BaseModel):
+            attr1 = BaseField('boolean')
+
+        test_model = TestModel()
+        test_model.attr1 = 'invalid'
+
+        try:
+            test_model._validate()
+            self.fail('_validate must raise error when attr value is invalid')
+        except ValueError, e:
+            self.assertEquals('invalid is not valid value for TestModel.attr1', str(e))
 
     def test_no_compose_base_model_create_a_empty_object_with_correct_attributes(self):
 

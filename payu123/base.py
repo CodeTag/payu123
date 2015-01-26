@@ -3,7 +3,7 @@ import requests, json, re, types
 
 VALIDATORS = {
     'int': {'validator': lambda v: re.match(r'^\d+$', str(v)) != None },
-    'string': {'validator': lambda v: re.match(r'^\w+$', str(v)) != None }
+    'string': {'validator': lambda v: re.match(r'^\w+$', str(v)) != None },
     'boolean': {'validator': lambda v: isinstance(v, bool) }
 }
 
@@ -40,7 +40,7 @@ class BaseModel(object):
             if isinstance(attr, types.ClassType) and BaseModel in attr.__bases__:
                 attr = attr()
             
-            else:
+            elif key in kwargs:
                 attr.require = bool(kwargs.get(key))
 
             self.__dict__[key] = attr._create()
@@ -72,7 +72,7 @@ class BaseModel(object):
 
         for key, attr in self._get_attrs():
             value = self.__dict__[key] if key in self.__dict__ else None
-            name = '%s.%s' % (parent or self.__class__, key)
+            name = '%s.%s' % (parent or self.__class__.__name__, key)
 
             if isinstance(attr, types.ClassType):
                 attr = attr()
